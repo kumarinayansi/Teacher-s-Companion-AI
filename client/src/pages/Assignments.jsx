@@ -26,7 +26,7 @@ const CreateModal = ({ onClose, onSaved, initialData, students }) => {
     setError(null);
     setGenerating(true);
     try {
-      const res = await fetch('http://localhost:3000/api/ai/assignment', {
+      const res = await fetch('https://teacher-s-companion-ai.onrender.com/api/ai/assignment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

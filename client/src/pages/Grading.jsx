@@ -56,7 +56,7 @@ const CreateAssignmentModal = ({ students, onClose, onSaved }) => {
     updateEntry(entry.id, 'grading', true);
     
     try {
-      const res = await fetch('http://localhost:3000/api/ai/grade', {
+      const res = await fetch('https://teacher-s-companion-ai.onrender.com/api/ai/grade', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, submission: entry.submission, rubric }),
@@ -381,7 +381,7 @@ const Grading = () => {
     
     setGradingRowId(assignment.id);
     try {
-      const res = await fetch('http://localhost:3000/api/ai/grade', {
+      const res = await fetch('https://teacher-s-companion-ai.onrender.com/api/ai/grade', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
