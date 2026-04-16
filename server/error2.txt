@@ -1,0 +1,62 @@
+﻿node : file:///C:/Users/nay
+an/Downloads/Teachers_Compa
+nion_Signup_Backup/server/i
+ndex.js:29
+At line:1 char:1
++ node index.js 2>&1 | 
+Out-File -Encoding utf8 
+error2.txt
++ ~~~~~~~~~~~~~~~~~~
+    + CategoryInfo         
+     : NotSpecified: (fil  
+  e:///C:/User...ver/ind   
+ ex.js:29:String) [], R    
+emoteException
+    + FullyQualifiedErrorI 
+   d : NativeCommandError
+ 
+            { type: 
+'info', title: 'Monday\\'s 
+lesson plan is ready to 
+review', desc: 'AI 
+generated a 45-min plan on 
+Long Division aligned to 
+CCSS.' },
+                           
+                  ^
+
+SyntaxError: Unexpected 
+identifier 's'
+    at 
+compileSourceTextModule (no
+de:internal/modules/esm/uti
+ls:346:16)
+    at ModuleLoader.moduleS
+trategy (node:internal/modu
+les/esm/translators:107:18)
+    at #translate (node:int
+ernal/modules/esm/loader:54
+6:20)
+    at afterLoad (node:inte
+rnal/modules/esm/loader:596
+:29)
+    at ModuleLoader.loadAnd
+Translate (node:internal/mo
+dules/esm/loader:601:12)
+    at #createModuleJob (no
+de:internal/modules/esm/loa
+der:624:36)
+    at 
+#getJobFromResolveResult (n
+ode:internal/modules/esm/lo
+ader:343:34)
+    at ModuleLoader.getModu
+leJobForImport (node:intern
+al/modules/esm/loader:311:4
+1)
+    at async onImport.trace
+Promise.__proto__ (node:int
+ernal/modules/esm/loader:66
+4:25)
+
+Node.js v22.20.0

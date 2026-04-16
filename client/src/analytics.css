@@ -1,0 +1,407 @@
+/* =========================================================
+   Teachers Companion AI — Analytics CSS
+   ========================================================= */
+
+/* ── Top Metrics Row ── */
+.analytics-metrics-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.metric-block {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mb-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mb-top h4 {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.mb-trend {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.trend-up {
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.15);
+}
+
+.trend-down {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.15);
+}
+
+.mb-val {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.mb-sub {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* ── Main Chart Section ── */
+.chart-container-main {
+  background: var(--bg-1);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 32px;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.chart-header h3 {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+
+.chart-legend {
+  display: flex;
+  gap: 16px;
+}
+
+.cl-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.cl-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.chart-wrapper {
+  position: relative;
+  height: 300px; /* Force height for Chart.js */
+  width: 100%;
+}
+
+
+/* ── Student Clusters Area ── */
+.cluster-board {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+.cluster-col-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.cluster-col-header h2 {
+  font-size: 1.15rem;
+  color: var(--text-primary);
+}
+
+.cluster-sub {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+.cluster-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+.cluster-badge.bright {
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.cluster-badge.risk {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.student-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+
+/* ── Student Cluster Cards ── */
+.sc-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sc-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateY(-2px);
+}
+
+/* Subtle glowing borders based on state */
+.sc-card.bright-glow {
+  border-left: 3px solid #10b981;
+}
+
+.sc-card.risk-glow {
+  border-left: 3px solid #ef4444;
+}
+
+.sc-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.sc-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.sc-text h4 {
+  font-size: 1rem;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.sc-text p {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.sc-metric {
+  text-align: right;
+}
+
+.sc-metric strong {
+  display: block;
+  font-size: 1.15rem;
+}
+.sc-metric span {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.bright-num { color: #10b981; }
+.risk-num { color: #ef4444; }
+
+
+/* ── Modal Specifics (Student Radar) ── */
+.student-modal-banner {
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 32px;
+  padding-right: 60px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-shrink: 0;
+}
+
+.sm-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 2px solid rgba(255,255,255,0.1);
+}
+
+.modal-body {
+  flex: 1; /* Fixes overflow cutoff in Safari/Chrome */
+  overflow-y: auto;
+}
+
+/* ── All Students Grid inside Modal ── */
+.student-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.sm-info {
+  flex: 1;
+}
+
+.sm-info h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.sm-info p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+/* GPA Badge */
+.sm-gpa-badge {
+  text-align: right;
+}
+
+.sm-gpa-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.sm-gpa-val {
+  font-size: 1.8rem;
+  font-weight: 800;
+}
+
+.sm-gpa-val.bright-num { color: #10b981; }
+.sm-gpa-val.risk-num { color: #ef4444; }
+
+
+/* AI Intervention Insight */
+.ai-insight-box {
+  background: linear-gradient(90deg, rgba(139, 92, 246, 0.15), transparent);
+  border-left: 4px solid var(--accent-1);
+  border-radius: 0 12px 12px 0;
+  padding: 20px;
+  margin-bottom: 32px;
+  display: flex;
+  gap: 16px;
+}
+
+.insight-icon {
+  color: var(--accent-1);
+  font-size: 1.5rem;
+  width: 32px;
+  flex-shrink: 0;
+}
+
+.insight-text strong {
+  display: block;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.insight-text p {
+  color: #e4e4e7;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* Modal Inner Grid layout */
+.sm-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+.sm-radar-container h3, 
+.sm-recent-container h3 {
+  font-size: 1.05rem;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding-bottom: 12px;
+}
+
+/* Recent Assessment List inside Modal */
+.assessment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.al-item {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.al-item-name {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.al-item-date {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.al-score {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+
+/* Media Queries */
+@media (max-width: 900px) {
+  .analytics-metrics-row {
+    grid-template-columns: 1fr;
+  }
+  .cluster-board {
+    grid-template-columns: 1fr;
+  }
+  .student-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .sm-detail-grid {
+    grid-template-columns: 1fr;
+  }
+  .student-modal-banner {
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 24px;
+    padding-right: 50px;
+  }
+  .sm-info {
+    min-width: 100%;
+    order: 3;
+  }
+}
