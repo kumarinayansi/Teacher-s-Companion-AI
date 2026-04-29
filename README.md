@@ -6,8 +6,80 @@ Teachers Companion AI is an intelligent assistant designed to help educators str
 
 This project is a monorepo containing both the frontend and backend codebases:
 
-- `/client` - The frontend application built with React and Vite.
-- `/server` - The backend API built with Node.js and Express.
+```text
+├── .gitignore
+├── .vscode
+│   ├── launch.json
+│   └── settings.json
+├── client
+│   ├── .env
+│   ├── .gitignore
+│   ├── convert.mjs
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── postcss.config.js
+│   ├── public
+│   │   ├── favicon.svg
+│   │   └── icons.svg
+│   ├── README.md
+│   ├── src
+│   │   ├── analytics.css
+│   │   ├── App.css
+│   │   ├── App.jsx
+│   │   ├── assets
+│   │   │   ├── hero.png
+│   │   │   ├── react.svg
+│   │   │   └── vite.svg
+│   │   ├── chat.css
+│   │   ├── components
+│   │   │   ├── DashboardLayout.jsx
+│   │   │   └── Sidebar.jsx
+│   │   ├── context
+│   │   │   └── ThemeContext.jsx
+│   │   ├── dashboard.css
+│   │   ├── grading.css
+│   │   ├── index.css
+│   │   ├── lessons.css
+│   │   ├── library.css
+│   │   ├── login.css
+│   │   ├── main.jsx
+│   │   ├── pages
+│   │   │   ├── Analytics.jsx
+│   │   │   ├── Assignments.jsx
+│   │   │   ├── Chat.jsx
+│   │   │   ├── Dashboard.jsx
+│   │   │   ├── Grading.jsx
+│   │   │   ├── Home.jsx
+│   │   │   ├── Lessons.jsx
+│   │   │   ├── Library.jsx
+│   │   │   ├── Login.jsx
+│   │   │   ├── Settings.jsx
+│   │   │   ├── Signup.jsx
+│   │   │   └── Students.jsx
+│   │   ├── settings.css
+│   │   ├── signup.css
+│   │   ├── students.css
+│   │   ├── style.css
+│   │   └── supabaseClient.js
+│   ├── tailwind.config.js
+│   └── vite.config.js
+├── package-lock.json
+├── package.json
+├── README.md
+├── server
+│   ├── .env
+│   ├── error.log
+│   ├── error.txt
+│   ├── error2.txt
+│   ├── index.js
+│   ├── package-lock.json
+│   └── package.json
+├── supabase
+│   └── schema.sql
+└── testInsert.js
+```
 
 ## Technologies Used
 
