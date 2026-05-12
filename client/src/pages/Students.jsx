@@ -344,7 +344,7 @@ const Students = () => {
           {!search && <button className="btn-primary" onClick={() => setShowAdd(true)}>+ Add Student</button>}
         </div>
       ) : (
-        <div className="dash-card" style={{ padding:0, overflow:'hidden' }}>
+        <div className="dash-card" style={{ padding:0, overflow:'hidden', flexShrink: 0 }}>
           <div className="students-table-wrap">
             <table className="students-table" style={{ width:'100%' }}>
               <thead>

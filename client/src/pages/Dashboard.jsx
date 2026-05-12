@@ -8,22 +8,75 @@ const Dashboard = () => {
     const [user, setUser] = useState(null);
     const [profile, setProfile] = useState(null);
     const [animate, setAnimate] = useState(false);
+    
+    // Live Data States
+    const [students, setStudents] = useState([]);
+    const [lessonsCount, setLessonsCount] = useState(0);
+    const [aiSuggestions, setAiSuggestions] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         supabase.auth.getSession().then(({ data: { session } }) => {
             if (session) {
                 setUser(session.user);
-                supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', session.user.id)
-                    .single()
-                    .then(({ data }) => { if (data) setProfile(data); });
+                fetchDashboardData(session.user.id);
+            } else {
+                setLoading(false);
             }
         });
         const timer = setTimeout(() => setAnimate(true), 150);
         return () => clearTimeout(timer);
     }, []);
+
+    const fetchDashboardData = async (userId) => {
+        try {
+            // Profile
+            const { data: profileData } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', userId)
+                .single();
+            if (profileData) setProfile(profileData);
+
+            // Students
+            const { data: studentsData, error: studentsError } = await supabase
+                .from('students')
+                .select('*')
+                .eq('teacher_id', userId);
+            
+            if (!studentsError && studentsData) {
+                setStudents(studentsData);
+            }
+
+            // Lessons Count
+            const { count: lessonsCount, error: lessonsError } = await supabase
+                .from('lessons')
+                .select('*', { count: 'exact', head: true })
+                .eq('teacher_id', userId);
+            
+            if (!lessonsError && lessonsCount !== null) {
+                setLessonsCount(lessonsCount);
+            }
+
+            // AI Suggestions
+            const { data: aiData, error: aiError } = await supabase
+                .from('ai_suggestions')
+                .select('*')
+                .eq('teacher_id', userId)
+                .eq('is_read', false)
+                .order('created_at', { ascending: false })
+                .limit(4);
+
+            if (!aiError && aiData) {
+                setAiSuggestions(aiData);
+            }
+
+        } catch (error) {
+            console.error("Error fetching dashboard data:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const displayName = profile?.first_name || user?.email?.split('@')[0] || 'Teacher';
 
@@ -33,6 +86,47 @@ const Dashboard = () => {
         if (hour < 17) return 'Good afternoon';
         return 'Good evening';
     };
+
+    // Calculate derived data
+    const totalStudents = students.length;
+    
+    let gradeA = 0, gradeB = 0, gradeC = 0, gradeD = 0;
+    let totalGrade = 0;
+    let gradedStudents = 0;
+
+    students.forEach(s => {
+        const grade = parseFloat(s.overall_grade);
+        if (!isNaN(grade)) {
+            totalGrade += grade;
+            gradedStudents++;
+            if (grade >= 90) gradeA++;
+            else if (grade >= 80) gradeB++;
+            else if (grade >= 70) gradeC++;
+            else gradeD++;
+        }
+    });
+
+    const averageGrade = gradedStudents > 0 ? (totalGrade / gradedStudents).toFixed(1) : 0;
+    const avgGradePercent = gradedStudents > 0 ? `${averageGrade}%` : 'N/A';
+
+    // Donut chart calculations
+    const donutTotal = gradedStudents || 1; // Prevent division by zero
+    const pctA = Math.round((gradeA / donutTotal) * 100) || 0;
+    const pctB = Math.round((gradeB / donutTotal) * 100) || 0;
+    const pctC = Math.round((gradeC / donutTotal) * 100) || 0;
+    const pctD = Math.round((gradeD / donutTotal) * 100) || 0;
+
+    // Convert percentages to stroke-dasharray (circumference is ~283 for r=45)
+    // 2 * Math.PI * 45 ≈ 282.74
+    const circ = 282.74;
+    const lenA = (pctA / 100) * circ;
+    const lenB = (pctB / 100) * circ;
+    const lenC = (pctC / 100) * circ;
+    const lenD = (pctD / 100) * circ;
+    
+    const offsetB = -lenA;
+    const offsetC = offsetB - lenB;
+    const offsetD = offsetC - lenC;
 
     return (
         <DashboardLayout>
@@ -66,12 +160,12 @@ const Dashboard = () => {
               </svg>
             </div>
             <div className="kpi-data">
-              <div className="kpi-value">142</div>
+              <div className="kpi-value">{totalStudents}</div>
               <div className="kpi-label">Total Students</div>
             </div>
             <div className="kpi-change positive">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="18 15 12 9 6 15" /></svg>
-              +12 this week
+              Active
             </div>
           </div>
 
@@ -82,12 +176,12 @@ const Dashboard = () => {
               </svg>
             </div>
             <div className="kpi-data">
-              <div className="kpi-value">38</div>
+              <div className="kpi-value">{lessonsCount}</div>
               <div className="kpi-label">Lessons Planned</div>
             </div>
             <div className="kpi-change positive">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="18 15 12 9 6 15" /></svg>
-              +5 this month
+              Saved
             </div>
           </div>
 
@@ -98,12 +192,12 @@ const Dashboard = () => {
               </svg>
             </div>
             <div className="kpi-data">
-              <div className="kpi-value">97%</div>
-              <div className="kpi-label">Graded on Time</div>
+              <div className="kpi-value">{avgGradePercent}</div>
+              <div className="kpi-label">Class Average</div>
             </div>
             <div className="kpi-change positive">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="18 15 12 9 6 15" /></svg>
-              AI Assisted
+              Across Subjects
             </div>
           </div>
 
@@ -163,19 +257,19 @@ const Dashboard = () => {
             <div className="donut-wrap">
               <svg className="donut-svg" viewBox="0 0 120 120" id="donut-svg">
                 <circle className="donut-bg" cx="60" cy="60" r="45" />
-                <circle className="donut-seg seg-a" cx="60" cy="60" r="45" strokeDasharray={animate ? "127 155" : "0 1000"} strokeDashoffset="0" />
-                <circle className="donut-seg seg-b" cx="60" cy="60" r="45" strokeDasharray={animate ? "61 221" : "0 1000"} strokeDashoffset="-127" />
-                <circle className="donut-seg seg-c" cx="60" cy="60" r="45" strokeDasharray={animate ? "39 243" : "0 1000"} strokeDashoffset="-188" />
-                <circle className="donut-seg seg-d" cx="60" cy="60" r="45" strokeDasharray={animate ? "16 266" : "0 1000"} strokeDashoffset="-227" />
-                <text x="60" y="55" className="donut-center-val">142</text>
+                <circle className="donut-seg seg-a" cx="60" cy="60" r="45" strokeDasharray={animate ? `${lenA} ${circ}` : `0 ${circ}`} strokeDashoffset="0" />
+                <circle className="donut-seg seg-b" cx="60" cy="60" r="45" strokeDasharray={animate ? `${lenB} ${circ}` : `0 ${circ}`} strokeDashoffset={offsetB} />
+                <circle className="donut-seg seg-c" cx="60" cy="60" r="45" strokeDasharray={animate ? `${lenC} ${circ}` : `0 ${circ}`} strokeDashoffset={offsetC} />
+                <circle className="donut-seg seg-d" cx="60" cy="60" r="45" strokeDasharray={animate ? `${lenD} ${circ}` : `0 ${circ}`} strokeDashoffset={offsetD} />
+                <text x="60" y="55" className="donut-center-val">{gradedStudents}</text>
                 <text x="60" y="69" className="donut-center-label">students</text>
               </svg>
             </div>
             <div className="donut-legend">
-              <div className="legend-item"><span className="legend-dot dot-a"></span><span className="legend-text">A (90–100%)</span><span className="legend-count">45</span></div>
-              <div className="legend-item"><span className="legend-dot dot-b"></span><span className="legend-text">B (80–89%)</span><span className="legend-count">52</span></div>
-              <div className="legend-item"><span className="legend-dot dot-c"></span><span className="legend-text">C (70–79%)</span><span className="legend-count">31</span></div>
-              <div className="legend-item"><span className="legend-dot dot-d"></span><span className="legend-text">Below 70%</span><span className="legend-count">14</span></div>
+              <div className="legend-item"><span className="legend-dot dot-a"></span><span className="legend-text">A (90–100%)</span><span className="legend-count">{gradeA}</span></div>
+              <div className="legend-item"><span className="legend-dot dot-b"></span><span className="legend-text">B (80–89%)</span><span className="legend-count">{gradeB}</span></div>
+              <div className="legend-item"><span className="legend-dot dot-c"></span><span className="legend-text">C (70–79%)</span><span className="legend-count">{gradeC}</span></div>
+              <div className="legend-item"><span className="legend-dot dot-d"></span><span className="legend-text">Below 70%</span><span className="legend-count">{gradeD}</span></div>
             </div>
           </div>
         </div>
@@ -193,38 +287,44 @@ const Dashboard = () => {
               <span className="ai-live-badge"><span className="live-dot"></span>Live</span>
             </div>
             <div className="ai-list" id="ai-list">
-              <div className="ai-item ai-item-warning" id="ai-1">
-                <div className="ai-item-icon">⚠️</div>
-                <div className="ai-item-content">
-                  <div className="ai-item-title">3 students need support in Fractions</div>
-                  <div className="ai-item-desc">Liam K., Sofia M., and James R. are scoring below 65%. Consider a targeted review session.</div>
-                </div>
-                <Link to="/students" className="ai-action-btn" style={{ textDecoration: 'none' }}>Review →</Link>
-              </div>
-              <div className="ai-item ai-item-info" id="ai-2">
-                <div className="ai-item-icon">📋</div>
-                <div className="ai-item-content">
-                  <div className="ai-item-title">Monday's lesson plan is ready to review</div>
-                  <div className="ai-item-desc">AI generated a 45-min plan on Long Division aligned to CCSS.Math.5.NBT.B.6.</div>
-                </div>
-                <Link to="/lessons" className="ai-action-btn" style={{ textDecoration: 'none' }}>Open →</Link>
-              </div>
-              <div className="ai-item ai-item-success" id="ai-3">
-                <div className="ai-item-icon">🎉</div>
-                <div className="ai-item-content">
-                  <div className="ai-item-title">Class average up 14% this month</div>
-                  <div className="ai-item-desc">Your differentiated assignments are working. Emma R. improved by 28%.</div>
-                </div>
-                <Link to="/analytics" className="ai-action-btn" style={{ textDecoration: 'none' }}>Details →</Link>
-              </div>
-              <div className="ai-item ai-item-info" id="ai-4">
-                <div className="ai-item-icon">💬</div>
-                <div className="ai-item-content">
-                  <div className="ai-item-title">5 parent newsletters due this Friday</div>
-                  <div className="ai-item-desc">AI can draft all 5 in under 30 seconds based on current progress data.</div>
-                </div>
-                <Link to="/chat" className="ai-action-btn" style={{ textDecoration: 'none' }}>Generate →</Link>
-              </div>
+              {aiSuggestions.length > 0 ? (
+                aiSuggestions.map((s, idx) => {
+                  let icon = '💡';
+                  let itemClass = 'ai-item-info';
+                  if (s.type === 'warning') { icon = '⚠️'; itemClass = 'ai-item-warning'; }
+                  if (s.type === 'success') { icon = '🎉'; itemClass = 'ai-item-success'; }
+                  if (s.type === 'error') { icon = '🚨'; itemClass = 'ai-item-warning'; }
+                  return (
+                    <div className={`ai-item ${itemClass}`} key={s.id || idx}>
+                      <div className="ai-item-icon">{icon}</div>
+                      <div className="ai-item-content">
+                        <div className="ai-item-title">{s.title}</div>
+                        <div className="ai-item-desc">{s.description}</div>
+                      </div>
+                      <Link to="/students" className="ai-action-btn" style={{ textDecoration: 'none' }}>Review →</Link>
+                    </div>
+                  );
+                })
+              ) : (
+                <>
+                  <div className="ai-item ai-item-warning" id="ai-1">
+                    <div className="ai-item-icon">⚠️</div>
+                    <div className="ai-item-content">
+                      <div className="ai-item-title">Welcome to Teacher's Companion AI</div>
+                      <div className="ai-item-desc">Add some students and start grading assignments to see intelligent AI suggestions here.</div>
+                    </div>
+                    <Link to="/students" className="ai-action-btn" style={{ textDecoration: 'none' }}>Add →</Link>
+                  </div>
+                  <div className="ai-item ai-item-info" id="ai-2">
+                    <div className="ai-item-icon">📋</div>
+                    <div className="ai-item-content">
+                      <div className="ai-item-title">Create your first lesson plan</div>
+                      <div className="ai-item-desc">Try generating a comprehensive lesson plan using AI in seconds.</div>
+                    </div>
+                    <Link to="/lessons" className="ai-action-btn" style={{ textDecoration: 'none' }}>Open →</Link>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
@@ -260,20 +360,35 @@ const Dashboard = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {[
-                      {img:1, name:'Emma Rodriguez', grade:'A', cls:'grade-a', w:'92%', status:'On Track', sb:'status-on-track'},
-                      {img:12, name:'Liam Kowalski', grade:'C', cls:'grade-c', w:'61%', status:'Needs Help', sb:'status-needs-help', warn:true},
-                      {img:5, name:'Sofia Martinez', grade:'B', cls:'grade-b', w:'78%', status:'On Track', sb:'status-on-track'},
-                      {img:9, name:'James Reynolds', grade:'C', cls:'grade-c', w:'58%', status:'Needs Help', sb:'status-needs-help', warn:true},
-                      {img:15, name:'Aisha Patel', grade:'A', cls:'grade-a', w:'96%', status:'Advanced', sb:'status-advanced'},
-                    ].map((s, i) => (
-                      <tr key={i}>
-                        <td><div className="stu-name-cell"><img src={`https://i.pravatar.cc/28?img=${s.img}`} alt={s.name} className="stu-avatar" /><span>{s.name}</span></div></td>
-                        <td><span className={`grade-badge ${s.cls}`}>{s.grade}</span></td>
-                        <td><div className="progress-bar-wrap"><div className={`progress-bar${s.warn ? ' progress-bar-warn' : ''}`} style={{ '--w': s.w }}></div></div></td>
-                        <td><span className={`status-badge ${s.sb}`}>{s.status}</span></td>
+                    {students.length > 0 ? students.slice(0, 5).map((s, i) => {
+                      let gradeLetter = 'N/A';
+                      let gradeClass = '';
+                      const grade = parseFloat(s.overall_grade);
+                      if (!isNaN(grade)) {
+                          if (grade >= 90) { gradeLetter = 'A'; gradeClass = 'grade-a'; }
+                          else if (grade >= 80) { gradeLetter = 'B'; gradeClass = 'grade-b'; }
+                          else if (grade >= 70) { gradeLetter = 'C'; gradeClass = 'grade-c'; }
+                          else { gradeLetter = 'D'; gradeClass = 'grade-c'; }
+                      }
+                      
+                      let statusClass = 'status-on-track';
+                      let warn = false;
+                      if (s.status === 'Needs Help') { statusClass = 'status-needs-help'; warn = true; }
+                      else if (s.status === 'Advanced') { statusClass = 'status-advanced'; }
+
+                      return (
+                        <tr key={s.id || i}>
+                          <td><div className="stu-name-cell"><img src={s.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(s.first_name + ' ' + s.last_name)}&background=random`} alt={s.first_name} className="stu-avatar" /><span>{s.first_name} {s.last_name}</span></div></td>
+                          <td><span className={`grade-badge ${gradeClass}`}>{gradeLetter}</span></td>
+                          <td><div className="progress-bar-wrap"><div className={`progress-bar${warn ? ' progress-bar-warn' : ''}`} style={{ '--w': `${grade || 0}%` }}></div></div></td>
+                          <td><span className={`status-badge ${statusClass}`}>{s.status || 'On Track'}</span></td>
+                        </tr>
+                      );
+                    }) : (
+                      <tr>
+                        <td colSpan="4" style={{ textAlign: 'center', padding: '1rem' }}>No students found.</td>
                       </tr>
-                    ))}
+                    )}
                   </tbody>
                 </table>
               </div>
