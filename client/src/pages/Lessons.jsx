@@ -27,7 +27,7 @@ const CreateModal = ({ onClose, onSaved, initialData }) => {
     setError(null);
     setGenerating(true);
     try {
-      const res = await fetch('https://teacher-s-companion-ai.onrender.com/api/ai/lesson', {
+      const res = await fetch('http://localhost:3000/api/ai/lesson', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
